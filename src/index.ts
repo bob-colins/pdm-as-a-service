@@ -2,6 +2,7 @@ import { McpAgent } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { bpmn20Prompt } from './bpmn20Prompt';
+import { definitionOfDonePrompt } from './definitionOfDonePrompt';
 
 // Define our MCP agent with tools
 export class MyMCP extends McpAgent {
@@ -15,11 +16,16 @@ export class MyMCP extends McpAgent {
 		this.server.tool(
 			"自然言語で記述された業務プロセスから最適なBPMN2.0のXMLを生成するためのプロンプトテンプレート",
 			{ instructions: z.string() },
-			async ({ instructions }) => {
-				return {
-					content: [{ type: "text", text: bpmn20Prompt(instructions) }],
-				};
-			}
+			async ({ instructions }) => ({
+				content: [{ type: "text", text: bpmn20Prompt(instructions) }],
+			})
+		);
+		this.server.tool(
+			"ユーザーストーリーの受け入れ条件を実装可能なレベルまで具体化するためのプロンプトテンプレート",
+			{ instructions: z.string() },
+			async ({ instructions }) => ({
+				content: [{ type: "text", text: definitionOfDonePrompt(instructions) }],
+			})
 		);
 	}
 }
