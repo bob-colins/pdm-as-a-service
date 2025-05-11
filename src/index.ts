@@ -9,11 +9,18 @@ export class MyMCP extends McpAgent {
 	server = new McpServer({
 		name: "Authless Calculator",
 		version: "1.0.0",
-	});
+	},
+    {
+        capabilities: {
+            //MCPクライアントでpromptが普及したら、そちらに切り替える
+            tools: {},
+        },
+    });
 
 	async init() {
 		// Tool to generate BPMN 2.0 XML from natural language
 		this.server.tool(
+			"bpmn20_prompt",
 			"自然言語で記述された業務プロセスから最適なBPMN2.0のXMLを生成するためのプロンプトテンプレート",
 			{ instructions: z.string() },
 			async ({ instructions }) => ({
@@ -21,7 +28,8 @@ export class MyMCP extends McpAgent {
 			})
 		);
 		this.server.tool(
-			"ユーザーストーリーの受け入れ条件を実装可能なレベルまで具体化するためのプロンプトテンプレート",
+			"definition_of_done_prompt",
+			"ユーザーストーリーと受け入れ基準を実装可能なレベルまでブラッシュアップするためのプロンプトテンプレート",
 			{ instructions: z.string() },
 			async ({ instructions }) => ({
 				content: [{ type: "text", text: definitionOfDonePrompt(instructions) }],
